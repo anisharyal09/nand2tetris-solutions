@@ -1,0 +1,20 @@
+/**
+ * Exclusive-nor gate:
+ * if ((a and Not(b)) or (Not(a) and b)) out = 0, else out = 1
+ * Output is simply Not of Xor
+ */
+
+ CHIP Xnor{
+    IN a, b;
+    OUT out;
+
+    PARTS:
+    Nand(a=a,b=a,out=Nota); //Out=aNand=Nota
+    Nand(a=b,b=b,out=Notb);
+
+    Nand(a=a, b=Notb, out = aNandNotb);
+    Nand(a=Nota, b=b, out = NotaNandb);
+
+    Nand(a=aNandNotb, b = NotaNandb, out = Xor);
+    Nand(a=Xor, b = Xor, out = out);
+ }

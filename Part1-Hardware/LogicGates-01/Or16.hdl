@@ -1,0 +1,68 @@
+/**
+ * 16-bit Or gate:
+ * for i = 0, ..., 15:
+ * out[i] = a[i] Or b[i] 
+ *
+ * Description from Nand2Tetris project materials. 
+ */
+
+CHIP Or16 {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+    
+    //Not of a[0,...,15]
+    Nand(a=a[0], b = a[0], out = aNot0);
+    Nand(a=a[1], b = a[1], out = aNot1);
+    Nand(a=a[2], b = a[2], out = aNot2);
+    Nand(a=a[3], b = a[3], out = aNot3);
+    Nand(a=a[4], b = a[4], out = aNot4);
+    Nand(a=a[5], b = a[5], out = aNot5);
+    Nand(a=a[6], b = a[6], out = aNot6);
+    Nand(a=a[7], b = a[7], out = aNot7);
+    Nand(a=a[8], b = a[8], out = aNot8);
+    Nand(a=a[9], b = a[9], out = aNot9);
+    Nand(a=a[10], b = a[10], out = aNot10);
+    Nand(a=a[11], b = a[11], out = aNot11);
+    Nand(a=a[12], b = a[12], out = aNot12);
+    Nand(a=a[13], b = a[13], out = aNot13);
+    Nand(a=a[14], b = a[14], out = aNot14);
+    Nand(a=a[15], b = a[15], out = aNot15);
+
+    // Not of b[0,...,15]
+    Nand(a=b[0], b = b[0], out = bNot0);
+    Nand(a=b[1], b = b[1], out = bNot1);
+    Nand(a=b[2], b = b[2], out = bNot2);
+    Nand(a=b[3], b = b[3], out = bNot3);
+    Nand(a=b[4], b = b[4], out = bNot4);
+    Nand(a=b[5], b = b[5], out = bNot5);
+    Nand(a=b[6], b = b[6], out = bNot6);
+    Nand(a=b[7], b = b[7], out = bNot7);
+    Nand(a=b[8], b = b[8], out = bNot8);
+    Nand(a=b[9], b = b[9], out = bNot9);
+    Nand(a=b[10], b = b[10], out = bNot10);
+    Nand(a=b[11], b = b[11], out = bNot11);
+    Nand(a=b[12], b = b[12], out = bNot12);
+    Nand(a=b[13], b = b[13], out = bNot13);
+    Nand(a=b[14], b = b[14], out = bNot14);
+    Nand(a=b[15], b = b[15], out = bNot15);
+
+    // NAND of Not a, Not b => OR Gate [0,...,15]
+    Nand(a = aNot0, b = bNot0, out = out[0]);
+    Nand(a = aNot1, b = bNot1, out = out[1]);
+    Nand(a = aNot2, b = bNot2, out = out[2]);
+    Nand(a = aNot3, b = bNot3, out = out[3]);
+    Nand(a = aNot4, b = bNot4, out = out[4]);
+    Nand(a = aNot5, b = bNot5, out = out[5]);
+    Nand(a = aNot6, b = bNot6, out = out[6]);
+    Nand(a = aNot7, b = bNot7, out = out[7]);
+    Nand(a = aNot8, b = bNot8, out = out[8]);
+    Nand(a = aNot9, b = bNot9, out = out[9]);
+    Nand(a = aNot10, b = bNot10, out = out[10]);
+    Nand(a = aNot11, b = bNot11, out = out[11]);
+    Nand(a = aNot12, b = bNot12, out = out[12]);
+    Nand(a = aNot13, b = bNot13, out = out[13]);
+    Nand(a = aNot14, b = bNot14, out = out[14]);
+    Nand(a = aNot15, b = bNot15, out = out[15]);  
+}

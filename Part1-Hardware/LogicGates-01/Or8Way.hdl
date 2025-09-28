@@ -1,0 +1,49 @@
+/**
+ * 8-way Or gate: 
+ * out = in[0] Or in[1] Or ... Or in[7]
+ *
+ * Description from Nand2Tetris project materials. 
+ */
+ 
+CHIP Or8Way {
+    IN in[8];
+    OUT out;
+
+    PARTS:
+
+    // Not for all in[0] to in[15]
+    Nand(a = in[0], b = in[0], out = Not0);
+    Nand(a = in[1], b = in[1], out = Not1);
+    Nand(a = in[2], b = in[2], out = Not2);
+    Nand(a = in[3], b = in[3], out = Not3);
+    Nand(a = in[4], b = in[4], out = Not4);
+    Nand(a = in[5], b = in[5], out = Not5);
+    Nand(a = in[6], b = in[6], out = Not6);
+    Nand(a = in[7], b = in[7], out = Not7);
+
+    // Or of in[0] & in[1]
+    Nand(a = Not0, b = Not1, out = temp1);
+
+    // Not of temp1
+    Nand(a = temp1, b = temp1, out = temp1Not);
+
+    // Or of temp1 & in[2]
+    Nand(a = temp1Not, b = Not2, out = temp2);
+
+    // continuing...
+    Nand(a = temp2, b = temp2, out = temp2Not);
+
+    Nand(a = temp2Not, b = Not3, out = temp3);
+    Nand(a = temp3, b = temp3, out = temp3Not);
+
+    Nand(a = temp3Not, b = Not4, out = temp4);
+    Nand(a = temp4, b = temp4, out = temp4Not);
+
+    Nand(a = temp4Not, b = Not5, out = temp5);
+    Nand(a = temp5, b = temp5, out = temp5Not);
+
+    Nand(a = temp5Not, b = Not6, out = temp6);
+    Nand(a = temp6, b = temp6, out = temp6Not);
+
+    Nand(a = temp6Not, b = Not7, out = out);
+}

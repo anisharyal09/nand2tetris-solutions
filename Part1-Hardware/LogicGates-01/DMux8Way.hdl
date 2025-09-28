@@ -1,0 +1,118 @@
+/**
+ * 8-way demultiplexor:
+ * [a, b, c, d, e, f, g, h] = [in, 0,  0,  0,  0,  0,  0,  0] if sel = 000
+ *                            [0, in,  0,  0,  0,  0,  0,  0] if sel = 001
+ *                            [0,  0, in,  0,  0,  0,  0,  0] if sel = 010
+ *                            [0,  0,  0, in,  0,  0,  0,  0] if sel = 011
+ *                            [0,  0,  0,  0, in,  0,  0,  0] if sel = 100
+ *                            [0,  0,  0,  0,  0, in,  0,  0] if sel = 101
+ *                            [0,  0,  0,  0,  0,  0, in,  0] if sel = 110
+ *                            [0,  0,  0,  0,  0,  0,  0, in] if sel = 111
+ *
+ * Description from Nand2Tetris project materials. 
+ */
+ 
+CHIP DMux8Way {
+    IN in, sel[3];
+    OUT a, b, c, d, e, f, g, h;
+
+    PARTS:
+
+    // Using DMux2Way & DMux4Way
+    DMux(in=in, sel=sel[2], a=abcd, b=efgh);
+
+    DMux4Way(in=abcd, sel[1]=sel[1], sel[0]=sel[0], a=a,b=b,c=c,d=d);
+    DMux4Way(in=efgh, sel[1]=sel[1], sel[0]=sel[0], a=e,b=f,c=g,d=h);
+
+/*------------------------------*/
+    /* Alternatively.........
+    // ##### Using NAND gates Only  #####
+
+    // Not sel (0...3)
+    Nand(a=sel[0], b=sel[0], out = sel0Not);
+    Nand(a=sel[1], b=sel[1], out = sel1Not);
+    Nand(a=sel[2], b=sel[2], out = sel2Not);
+
+
+    //When sel = 000
+    // And for sel0Not, sel1Not & sel2Not
+    Nand(a=sel0Not, b = sel1Not, out = t1);
+    Nand(a=t1, b = t1, out = t1And);   
+    Nand(a=t1And, b = sel2Not, out = t2Nand);   
+    Nand(a=t2Nand, b = t2Nand, out = sel000And);   
+
+    Nand(a=sel000And, b = in, out = aNand); 
+    Nand(a = aNand, b = aNand, out = a);     // out = a, when sel = 000 
+
+    //When sel = 001
+    // And for sel2Not, sel1Not & sel0
+    Nand(a=sel[0], b = sel1Not, out = t3);
+    Nand(a=t3, b = t3, out = t3And);   
+    Nand(a=t3And, b = sel2Not, out = t4Nand);   
+    Nand(a=t4Nand, b = t4Nand, out = sel001And);   
+
+    Nand(a=sel001And, b = in, out = bNand);    
+    Nand(a = bNand, b = bNand, out = b);     // out = b, when sel = 001
+
+    //When sel = 010
+    // And for sel2Not, sel1 & sel0Not
+    Nand(a=sel0Not, b = sel[1], out = t5);
+    Nand(a=t5, b = t5, out = t5And);   
+    Nand(a=t5And, b = sel2Not, out = t6Nand);   
+    Nand(a=t6Nand, b = t6Nand, out = sel010And);
+
+    Nand(a=sel010And, b = in, out = cNand);    
+    Nand(a = cNand, b = cNand, out = c);     // out = c, when sel = 010
+
+    //When sel = 011
+    // And for sel2Not, sel1 & sel0
+    Nand(a=sel[0], b = sel[1], out = t7);
+    Nand(a=t7, b = t7, out = t7And);   
+    Nand(a=t7And, b = sel2Not, out = t8Nand);   
+    Nand(a=t8Nand, b = t8Nand, out = sel011And);   
+
+    Nand(a=sel011And, b = in, out = dNand);    
+    Nand(a = dNand, b = dNand, out = d);     // out = d, when sel = 011
+
+
+    //When sel = 100
+    // And for sel0Not, sel1Not & sel[2]
+    Nand(a=sel0Not, b = sel1Not, out = t11);
+    Nand(a=t11, b = t11, out = t11And);   
+    Nand(a=t11And, b = sel[2], out = t12Nand);   
+    Nand(a=t12Nand, b = t12Nand, out = sel100And);   
+
+    Nand(a=sel100And, b = in, out = eNand); 
+    Nand(a = eNand, b = eNand, out = e);     // out = e, when sel = 100 
+
+    //When sel = 101
+    // And for sel[2], sel1Not & sel0
+    Nand(a=sel[0], b = sel1Not, out = t13);
+    Nand(a=t13, b = t13, out = t13And);   
+    Nand(a=t13And, b = sel[2], out = t14Nand);   
+    Nand(a=t14Nand, b = t14Nand, out = sel101And);   
+
+    Nand(a=sel101And, b = in, out = fNand);    
+    Nand(a = fNand, b = fNand, out = f);     // out = f, when sel = 101
+
+    //When sel = 110
+    // And for sel[2], sel1 & sel0Not
+    Nand(a=sel0Not, b = sel[1], out = t15);
+    Nand(a=t15, b = t15, out = t15And);   
+    Nand(a=t15And, b = sel[2], out = t16Nand);   
+    Nand(a=t16Nand, b = t16Nand, out = sel110And);
+
+    Nand(a=sel110And, b = in, out = gNand);    
+    Nand(a = gNand, b = gNand, out = g);     // out = g, when sel = 110
+
+    //When sel = 111
+    // And for sel[2], sel1 & sel0
+    Nand(a=sel[0], b = sel[1], out = t17);
+    Nand(a=t17, b = t17, out = t17And);   
+    Nand(a=t17And, b = sel[2], out = t18Nand);   
+    Nand(a=t18Nand, b = t18Nand, out = sel111And);   
+
+    Nand(a=sel111And, b = in, out = hNand);    
+    Nand(a = hNand, b = hNand, out = h);     // out = h, when sel = 111
+    */
+}

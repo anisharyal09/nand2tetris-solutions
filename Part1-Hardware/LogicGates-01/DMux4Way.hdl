@@ -1,0 +1,62 @@
+/**
+ * 4-way demultiplexor:
+ * [a, b, c, d] = [in, 0, 0, 0] if sel = 00
+ *                [0, in, 0, 0] if sel = 01
+ *                [0, 0, in, 0] if sel = 10
+ *                [0, 0, 0, in] if sel = 11
+ *
+ * Description from Nand2Tetris project materials. 
+*/
+
+CHIP DMux4Way {
+    IN in, sel[2];
+    OUT a, b, c, d;
+
+    PARTS:
+
+    //Using Demux
+    DMux(in=in, sel=sel[1], a=g1, b=g2);
+
+    //final out selection
+    DMux(in=g1, sel = sel[0], a=a, b=b);
+    DMux(in=g2, sel=sel[0], a=c, b=d);
+
+/*------------------------------*/
+    /* Alternatively.........
+    // ##### Using NAND gates Only  #####
+  
+    // Not sel
+    Nand(a=sel[0], b=sel[0], out = sel0Not);
+    Nand(a=sel[1], b=sel[1], out = sel1Not);
+
+    // 1:4 (4 way) Demultiplexor
+
+    //When sel = 00
+    Nand(a=sel0Not, b = sel1Not, out = sel01NotNand);
+    Nand(a=sel01NotNand, b = sel01NotNand, out = sel01NotAnd);   // And for sel0Not & sel1Not
+
+    Nand(a=sel01NotAnd, b = in, out = aNand); 
+    Nand(a = aNand, b = aNand, out = a);     // out = a, when sel = 00 
+
+    //When sel = 01
+    Nand(a=sel1Not, b = sel[0], out = sel1NotNandsel0);
+    Nand(a=sel1NotNandsel0, b = sel1NotNandsel0, out = sel1NotAndsel0);   // And for sel1Not & sel0
+
+    Nand(a=sel1NotAndsel0, b = in, out = bNand);    
+    Nand(a = bNand, b = bNand, out = b);     // out = b, when sel = 01
+
+    //When sel = 10
+    Nand(a=sel[1], b = sel0Not, out = sel1Nandsel0Not);
+    Nand(a=sel1Nandsel0Not, b = sel1Nandsel0Not, out = sel1Andsel0Not);   // And for sel1 & sel0Not
+
+    Nand(a=sel1Andsel0Not, b = in, out = cNand);    
+    Nand(a = cNand, b = cNand, out = c);     // out = c, when sel = 10
+
+    //When sel = 11
+    Nand(a=sel[0], b = sel[1], out = sel11Nand);
+    Nand(a=sel11Nand, b = sel11Nand, out = sel11And);   // And for sel0 & sel1
+
+    Nand(a=sel11And, b = in, out = dNand);    
+    Nand(a = dNand, b = dNand, out = d);     // out = d, when sel = 11
+    */
+}

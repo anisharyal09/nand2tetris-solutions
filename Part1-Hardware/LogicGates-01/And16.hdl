@@ -1,0 +1,50 @@
+/**
+ * 16-bit And gate:
+ * for i = 0, ..., 15:
+ * out[i] = a[i] And b[i]
+ * 
+ * Description from Nand2Tetris project materials. 
+ */
+
+CHIP And16 {
+    IN a[16], b[16];
+    OUT out[16];
+
+    PARTS:
+
+    // Nand
+    Nand(a=a[0], b = b[0], out=aNandb0);
+    Nand(a=a[1], b = b[1], out=aNandb1);
+    Nand(a=a[2], b = b[2], out=aNandb2);
+    Nand(a=a[3], b = b[3], out=aNandb3);
+    Nand(a=a[4], b = b[4], out=aNandb4);
+    Nand(a=a[5], b = b[5], out=aNandb5);
+    Nand(a=a[6], b = b[6], out=aNandb6);
+    Nand(a=a[7], b = b[7], out=aNandb7);
+    Nand(a=a[8], b = b[8], out=aNandb8);
+    Nand(a=a[9], b = b[9], out=aNandb9);
+    Nand(a=a[10], b = b[10], out=aNandb10);
+    Nand(a=a[11], b = b[11], out=aNandb11);
+    Nand(a=a[12], b = b[12], out=aNandb12);
+    Nand(a=a[13], b = b[13], out=aNandb13);
+    Nand(a=a[14], b = b[14], out=aNandb14);
+    Nand(a=a[15], b = b[15], out=aNandb15);
+
+    // Not of NAND = AND
+    Nand(a=aNandb0, b = aNandb0, out = out[0]);  //bit - 0
+    Nand(a=aNandb1, b = aNandb1, out = out[1]);  //bit - 1
+    Nand(a=aNandb2, b = aNandb2, out = out[2]);
+    Nand(a=aNandb3, b = aNandb3, out = out[3]);
+    Nand(a=aNandb4, b = aNandb4, out = out[4]);
+    Nand(a=aNandb5, b = aNandb5, out = out[5]);
+    Nand(a=aNandb6, b = aNandb6, out = out[6]);
+    Nand(a=aNandb7, b = aNandb7, out = out[7]);
+    Nand(a=aNandb8, b = aNandb8, out = out[8]);
+    Nand(a=aNandb9, b = aNandb9, out = out[9]);
+    Nand(a=aNandb10, b = aNandb10, out = out[10]);
+    Nand(a=aNandb11, b = aNandb11, out = out[11]);
+    Nand(a=aNandb12, b = aNandb12, out = out[12]);
+    Nand(a=aNandb13, b = aNandb13, out = out[13]);
+    Nand(a=aNandb14, b = aNandb14, out = out[14]);
+    Nand(a=aNandb15, b = aNandb15, out = out[15]);
+}

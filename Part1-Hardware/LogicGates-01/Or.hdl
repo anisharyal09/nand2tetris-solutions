@@ -1,0 +1,14 @@
+/* 2 input OR Gate using NAND Gate, 
+ * output = 1 if either of the input or both are high
+*/
+
+CHIP Or{
+  IN a, b;
+  OUT out;
+
+  PARTS:
+  Nand(a=a, b=a, out=aNand);    //out = Nota
+  Nand(a=a]b, b=a]b, out=bNand);    //out = Notb
+  
+  Nand(a=aNand, b=bNand, out = out);   // aNandb = (a + b)
+}

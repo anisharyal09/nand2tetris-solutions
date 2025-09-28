@@ -1,0 +1,115 @@
+/**
+ * 16-bit multiplexor: 
+ * for i = 0, ..., 15:
+ * if (sel = 0) out[i] = a[i], else out[i] = b[i]
+ *
+ * Description from Nand2Tetris project materials. 
+ */
+ 
+CHIP Mux16 {
+    IN a[16], b[16], sel;
+    OUT out[16];
+
+    PARTS:
+
+    // Using Mux to achieve this...
+    Mux(a=a[0], b=b[0], sel=sel, out=out[0]); // bit - 0
+    Mux(a=a[1], b=b[1], sel=sel, out=out[1]); // bit - 1
+    Mux(a=a[2], b=b[2], sel=sel, out=out[2]);
+    Mux(a=a[3], b=b[3], sel=sel, out=out[3]);
+    Mux(a=a[4], b=b[4], sel=sel, out=out[4]);
+    Mux(a=a[5], b=b[5], sel=sel, out=out[5]);
+    Mux(a=a[6], b=b[6], sel=sel, out=out[6]);
+    Mux(a=a[7], b=b[7], sel=sel, out=out[7]);
+    Mux(a=a[8], b=b[8], sel=sel, out=out[8]);
+    Mux(a=a[9], b=b[9], sel=sel, out=out[9]);
+    Mux(a=a[10], b=b[10], sel=sel, out=out[10]);
+    Mux(a=a[11], b=b[11], sel=sel, out=out[11]);
+    Mux(a=a[12], b=b[12], sel=sel, out=out[12]);
+    Mux(a=a[13], b=b[13], sel=sel, out=out[13]);
+    Mux(a=a[14], b=b[14], sel=sel, out=out[14]);
+    Mux(a=a[15], b=b[15], sel=sel, out=out[15]);
+    
+/*------------------------------*/   
+    /* Alternatively....
+    //// ######## Using NAND Gates only #######
+
+    // Not sel
+    Nand(a=sel, b = sel, out = selNot);
+    
+    // for bit 0
+    // when sel = 0
+    Nand(a=a[0], b=selNot, out = temp1);
+
+    // when sel = 1
+    Nand(a=b[0], b=sel, out = temp01);
+    
+    // out = out[0] - Or gate implementation
+    Nand(a = temp1, b = temp01, out = out[0]);
+
+
+    //continuing...
+
+    //for bit 1
+    Nand(a=a[1], b=selNot, out = temp2);
+    Nand(a=b[1], b=sel, out = temp02);
+    Nand(a = temp2, b = temp02, out = out[1]);
+
+    // ....
+    Nand(a=a[2], b=selNot, out = temp3);
+    Nand(a=b[2], b=sel, out = temp03);
+    Nand(a = temp3, b = temp03, out = out[2]);
+
+    Nand(a=a[3], b=selNot, out = temp4);
+    Nand(a=b[3], b=sel, out = temp04);
+    Nand(a = temp4, b = temp04, out = out[3]);
+
+    Nand(a=a[4], b=selNot, out = temp5);
+    Nand(a=b[4], b=sel, out = temp05);
+    Nand(a = temp5, b = temp05, out = out[4]);
+
+    Nand(a=a[5], b=selNot, out = temp6);
+    Nand(a=b[5], b=sel, out = temp06);
+    Nand(a = temp6, b = temp06, out = out[5]);
+
+    Nand(a=a[6], b=selNot, out = temp7);
+    Nand(a=b[6], b=sel, out = temp07);
+    Nand(a = temp7, b = temp07, out = out[6]);
+
+    Nand(a=a[7], b=selNot, out = temp8);
+    Nand(a=b[7], b=sel, out = temp08);
+    Nand(a = temp8, b = temp08, out = out[7]);
+
+    Nand(a=a[8], b=selNot, out = temp9);
+    Nand(a=b[8], b=sel, out = temp09);
+    Nand(a = temp9, b = temp09, out = out[8]);
+
+    Nand(a=a[9], b=selNot, out = temp10);
+    Nand(a=b[9], b=sel, out = temp010);
+    Nand(a = temp10, b = temp010, out = out[9]);
+
+    Nand(a=a[10], b=selNot, out = temp11);
+    Nand(a=b[10], b=sel, out = temp011);
+    Nand(a = temp11, b = temp011, out = out[10]);
+
+    Nand(a=a[11], b=selNot, out = temp12);
+    Nand(a=b[11], b=sel, out = temp012);
+    Nand(a = temp12, b = temp012, out = out[11]);
+
+    Nand(a=a[12], b=selNot, out = temp13);
+    Nand(a=b[12], b=sel, out = temp013);
+    Nand(a = temp13, b = temp013, out = out[12]);
+
+    Nand(a=a[13], b=selNot, out = temp14);
+    Nand(a=b[13], b=sel, out = temp014);
+    Nand(a = temp14, b = temp014, out = out[13]);
+
+    Nand(a=a[14], b=selNot, out = temp15);
+    Nand(a=b[14], b=sel, out = temp015);
+    Nand(a = temp15, b = temp015, out = out[14]);
+
+    Nand(a=a[15], b=selNot, out = temp16);
+    Nand(a=b[15], b=sel, out = temp016);
+    Nand(a = temp16, b = temp016, out = out[15]);
+    */
+}

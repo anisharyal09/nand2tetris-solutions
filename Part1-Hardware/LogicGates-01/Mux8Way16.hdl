@@ -1,0 +1,515 @@
+/**
+ * 8-way 16-bit multiplexor:
+ * out = a if sel = 000
+ *       b if sel = 001
+ *       c if sel = 010
+ *       d if sel = 011
+ *       e if sel = 100
+ *       f if sel = 101
+ *       g if sel = 110
+ *       h if sel = 111
+ *
+ * Description from Nand2Tetris project materials. 
+ */
+ 
+CHIP Mux8Way16 {
+    IN a[16], b[16], c[16], d[16],
+       e[16], f[16], g[16], h[16],
+       sel[3];
+    OUT out[16];
+
+    PARTS:
+
+    //Implementing Mux4Way16
+    Mux4Way16(a=a, b=b, c=c, d=d, sel[1] = sel[1], sel[0] = sel[0], out=o1);
+    Mux4Way16(a=e, b=f, c=g, d=h, sel[1] = sel[1], sel[0] = sel[0], out=o2);
+
+    //final out, implementing Mux16
+    Mux16(a=o1, b=o2, sel=sel[2], out=out);
+
+/*------------------------------*/
+    /* Alternatively.........
+    // ##### Using NAND gates Only  #####
+
+    // Not sel(0,1,2)
+    Nand(a=sel[0], b = sel[0], out = sel0Not);
+    Nand(a=sel[1], b = sel[1], out = sel1Not);
+    Nand(a=sel[2], b = sel[2], out = sel2Not);
+
+    // when sel = 000
+    Nand(a=sel1Not, b=sel0Not, out = temp00Nand); // out = sel0Not NAND sel1Not => NOT of (sel1Not AND sel0Not) = t000Nand
+    Nand(a=temp00Nand, b=temp00Nand, out = temp000And); // out = sel0Not AND sel1Not = temp000And
+    Nand(a=sel2Not, b=temp000And, out = t000Nand); //out = NAND of sel2Not, sel1Not, sel0Not = t000Nand
+    Nand(a=t000Nand, b=t000Nand, out = t000And); // out = NOT of t000Nand = t000And
+    // when sel = 001
+    Nand(a=sel1Not, b=sel[0], out = temp01Nand); 
+    Nand(a=temp01Nand, b=temp01Nand, out = temp001And);
+    Nand(a=sel2Not, b=temp001And, out = t001Nand);
+    Nand(a=t001Nand, b=t001Nand, out = t001And);
+    // when sel = 010
+    Nand(a=sel0Not, b=sel[1], out = temp02Nand); 
+    Nand(a=temp02Nand, b=temp02Nand, out = temp002And);
+    Nand(a=sel2Not, b=temp002And, out = t002Nand);
+    Nand(a=t002Nand, b=t002Nand, out = t002And);
+    // when sel = 011
+    Nand(a=sel[1], b=sel[0], out = temp03Nand); 
+    Nand(a=temp03Nand, b=temp03Nand, out = temp003And);
+    Nand(a=sel2Not, b=temp003And, out = t003Nand);
+    Nand(a=t003Nand, b=t003Nand, out = t003And);
+
+    // when sel = 100
+    Nand(a=sel1Not, b=sel0Not, out = temp10Nand);
+    Nand(a=temp10Nand, b=temp10Nand, out = temp100And);
+    Nand(a=sel[2], b=temp100And, out = t100Nand);
+    Nand(a=t100Nand, b=t100Nand, out = t100And);
+    // when sel = 101
+    Nand(a=sel1Not, b=sel[0], out = temp11Nand); 
+    Nand(a=temp11Nand, b=temp11Nand, out = temp101And);
+    Nand(a=sel[2], b=temp101And, out = t101Nand);
+    Nand(a=t101Nand, b=t101Nand, out = t101And);
+    // when sel = 110
+    Nand(a=sel0Not, b=sel[1], out = temp12Nand); 
+    Nand(a=temp12Nand, b=temp12Nand, out = temp102And);
+    Nand(a=sel[2], b=temp102And, out = t102Nand);
+    Nand(a=t102Nand, b=t102Nand, out = t102And);
+    // when sel = 111
+    Nand(a=sel[1], b=sel[0], out = temp13Nand); 
+    Nand(a=temp13Nand, b=temp13Nand, out = temp103And);
+    Nand(a=sel[2], b=temp103And, out = t103Nand);
+    Nand(a=t103Nand, b=t103Nand, out = t103And);
+
+
+    /// for bit 0
+    Nand(a=t000And, b= a[0], out = a0Not);
+    Nand(a=t001And, b= b[0], out = b0Not);
+    Nand(a=t002And, b= c[0], out = c0Not);
+    Nand(a=t003And, b= d[0], out = d0Not);
+    Nand(a=t100And, b= e[0], out = e0Not);
+    Nand(a=t101And, b= f[0], out = f0Not);
+    Nand(a=t102And, b= g[0], out = g0Not);
+    Nand(a=t103And, b= h[0], out = h0Not);
+
+    //Or gate implementation for final output, out = out[0] => OR of a0, b0,...., g0, h0
+    Nand(a=a0Not, b=b0Not, out = temp01); //Or of a0, b0
+    Nand(a=temp01, b=temp01, out= temp01Not);
+    Nand(a=c0Not, b=d0Not, out = temp02); //OR of c0, d0
+    Nand(a=temp02, b=temp02, out = temp02Not);
+    Nand(a=e0Not, b=f0Not, out = temp03); //OR of e0, f0
+    Nand(a=temp03, b=temp03, out = temp03Not);
+    Nand(a=g0Not, b=h0Not, out = temp04); //OR of g0, h0
+    Nand(a=temp04, b=temp04, out = temp04Not);
+
+    Nand(a=temp01Not, b=temp02Not, out = temp05);
+    Nand(a=temp05, b=temp05, out = temp05Not);
+    Nand(a=temp03Not, b=temp04Not, out = temp06);
+    Nand(a=temp06, b=temp06, out = temp06Not);
+
+    Nand(a=temp05Not, b=temp06Not, out= out[0]);
+
+
+    // similarly for bit 1...
+    Nand(a=t000And, b= a[1], out = a1Not);
+    Nand(a=t001And, b= b[1], out = b1Not);
+    Nand(a=t002And, b= c[1], out = c1Not);
+    Nand(a=t003And, b= d[1], out = d1Not);
+    Nand(a=t100And, b= e[1], out = e1Not);
+    Nand(a=t101And, b= f[1], out = f1Not);
+    Nand(a=t102And, b= g[1], out = g1Not);
+    Nand(a=t103And, b= h[1], out = h1Not);
+
+    //Or gate implementation for final output, out = out[0] => OR of a1, b1,...., g1, h1
+    Nand(a=a1Not, b=b1Not, out = temp11); //Or of a1, b1
+    Nand(a=temp11, b=temp11, out= temp11Not);
+    Nand(a=c1Not, b=d1Not, out = temp12); //OR of c1, d1
+    Nand(a=temp12, b=temp12, out = temp12Not);
+    Nand(a=e1Not, b=f1Not, out = temp13); //OR of e1, f1
+    Nand(a=temp13, b=temp13, out = temp13Not);
+    Nand(a=g1Not, b=h1Not, out = temp14); //OR of g1, h1
+    Nand(a=temp14, b=temp14, out = temp14Not);
+
+    Nand(a=temp11Not, b=temp12Not, out = temp15);
+    Nand(a=temp15, b=temp15, out = temp15Not);
+    Nand(a=temp13Not, b=temp14Not, out = temp16);
+    Nand(a=temp16, b=temp16, out = temp16Not);
+
+    Nand(a=temp15Not, b=temp16Not, out= out[1]);
+
+
+    ////// for bit 2
+    Nand(a=t000And, b= a[2], out = a2Not);
+    Nand(a=t001And, b= b[2], out = b2Not);
+    Nand(a=t002And, b= c[2], out = c2Not);
+    Nand(a=t003And, b= d[2], out = d2Not);
+    Nand(a=t100And, b= e[2], out = e2Not);
+    Nand(a=t101And, b= f[2], out = f2Not);
+    Nand(a=t102And, b= g[2], out = g2Not);
+    Nand(a=t103And, b= h[2], out = h2Not);
+
+    Nand(a=a2Not, b=b2Not, out = temp21);
+    Nand(a=temp21, b=temp21, out= temp21Not);
+    Nand(a=c2Not, b=d2Not, out = temp22);
+    Nand(a=temp22, b=temp22, out = temp22Not);
+    Nand(a=e2Not, b=f2Not, out = temp23);
+    Nand(a=temp23, b=temp23, out = temp23Not);
+    Nand(a=g2Not, b=h2Not, out = temp24);
+    Nand(a=temp24, b=temp24, out = temp24Not);
+
+    Nand(a=temp21Not, b=temp22Not, out = temp25);
+    Nand(a=temp25, b=temp25, out = temp25Not);
+    Nand(a=temp23Not, b=temp24Not, out = temp26);
+    Nand(a=temp26, b=temp26, out = temp26Not);
+
+    Nand(a=temp25Not, b=temp26Not, out= out[2]);
+
+
+    ////// for bit 3
+    Nand(a=t000And, b= a[3], out = a3Not);
+    Nand(a=t001And, b= b[3], out = b3Not);
+    Nand(a=t002And, b= c[3], out = c3Not);
+    Nand(a=t003And, b= d[3], out = d3Not);
+    Nand(a=t100And, b= e[3], out = e3Not);
+    Nand(a=t101And, b= f[3], out = f3Not);
+    Nand(a=t102And, b= g[3], out = g3Not);
+    Nand(a=t103And, b= h[3], out = h3Not);
+
+    Nand(a=a3Not, b=b3Not, out = temp31);
+    Nand(a=temp31, b=temp31, out= temp31Not);
+    Nand(a=c3Not, b=d3Not, out = temp32);
+    Nand(a=temp32, b=temp32, out = temp32Not);
+    Nand(a=e3Not, b=f3Not, out = temp33);
+    Nand(a=temp33, b=temp33, out = temp33Not);
+    Nand(a=g3Not, b=h3Not, out = temp34);
+    Nand(a=temp34, b=temp34, out = temp34Not);
+
+    Nand(a=temp31Not, b=temp32Not, out = temp35);
+    Nand(a=temp35, b=temp35, out = temp35Not);
+    Nand(a=temp33Not, b=temp34Not, out = temp36);
+    Nand(a=temp36, b=temp36, out = temp36Not);
+
+    Nand(a=temp35Not, b=temp36Not, out= out[3]);
+
+
+    ////// for bit 4
+    Nand(a=t000And, b= a[4], out = a4Not);
+    Nand(a=t001And, b= b[4], out = b4Not);
+    Nand(a=t002And, b= c[4], out = c4Not);
+    Nand(a=t003And, b= d[4], out = d4Not);
+    Nand(a=t100And, b= e[4], out = e4Not);
+    Nand(a=t101And, b= f[4], out = f4Not);
+    Nand(a=t102And, b= g[4], out = g4Not);
+    Nand(a=t103And, b= h[4], out = h4Not);
+
+    Nand(a=a4Not, b=b4Not, out = temp41);
+    Nand(a=temp41, b=temp41, out= temp41Not);
+    Nand(a=c4Not, b=d4Not, out = temp42);
+    Nand(a=temp42, b=temp42, out = temp42Not);
+    Nand(a=e4Not, b=f4Not, out = temp43);
+    Nand(a=temp43, b=temp43, out = temp43Not);
+    Nand(a=g4Not, b=h4Not, out = temp44);
+    Nand(a=temp44, b=temp44, out = temp44Not);
+
+    Nand(a=temp41Not, b=temp42Not, out = temp45);
+    Nand(a=temp45, b=temp45, out = temp45Not);
+    Nand(a=temp43Not, b=temp44Not, out = temp46);
+    Nand(a=temp46, b=temp46, out = temp46Not);
+
+    Nand(a=temp45Not, b=temp46Not, out= out[4]);
+
+
+    ////// for bit 5
+    Nand(a=t000And, b= a[5], out = a5Not);
+    Nand(a=t001And, b= b[5], out = b5Not);
+    Nand(a=t002And, b= c[5], out = c5Not);
+    Nand(a=t003And, b= d[5], out = d5Not);
+    Nand(a=t100And, b= e[5], out = e5Not);
+    Nand(a=t101And, b= f[5], out = f5Not);
+    Nand(a=t102And, b= g[5], out = g5Not);
+    Nand(a=t103And, b= h[5], out = h5Not);
+
+    Nand(a=a5Not, b=b5Not, out = temp51);
+    Nand(a=temp51, b=temp51, out= temp51Not);
+    Nand(a=c5Not, b=d5Not, out = temp52);
+    Nand(a=temp52, b=temp52, out = temp52Not);
+    Nand(a=e5Not, b=f5Not, out = temp53);
+    Nand(a=temp53, b=temp53, out = temp53Not);
+    Nand(a=g5Not, b=h5Not, out = temp54);
+    Nand(a=temp54, b=temp54, out = temp54Not);
+
+    Nand(a=temp51Not, b=temp52Not, out = temp55);
+    Nand(a=temp55, b=temp55, out = temp55Not);
+    Nand(a=temp53Not, b=temp54Not, out = temp56);
+    Nand(a=temp56, b=temp56, out = temp56Not);
+
+    Nand(a=temp55Not, b=temp56Not, out= out[5]);
+
+
+    ////// for bit 6
+    Nand(a=t000And, b= a[6], out = a6Not);
+    Nand(a=t001And, b= b[6], out = b6Not);
+    Nand(a=t002And, b= c[6], out = c6Not);
+    Nand(a=t003And, b= d[6], out = d6Not);
+    Nand(a=t100And, b= e[6], out = e6Not);
+    Nand(a=t101And, b= f[6], out = f6Not);
+    Nand(a=t102And, b= g[6], out = g6Not);
+    Nand(a=t103And, b= h[6], out = h6Not);
+
+    Nand(a=a6Not, b=b6Not, out = temp61);
+    Nand(a=temp61, b=temp61, out= temp61Not);
+    Nand(a=c6Not, b=d6Not, out = temp62);
+    Nand(a=temp62, b=temp62, out = temp62Not);
+    Nand(a=e6Not, b=f6Not, out = temp63);
+    Nand(a=temp63, b=temp63, out = temp63Not);
+    Nand(a=g6Not, b=h6Not, out = temp64);
+    Nand(a=temp64, b=temp64, out = temp64Not);
+
+    Nand(a=temp61Not, b=temp62Not, out = temp65);
+    Nand(a=temp65, b=temp65, out = temp65Not);
+    Nand(a=temp63Not, b=temp64Not, out = temp66);
+    Nand(a=temp66, b=temp66, out = temp66Not);
+
+    Nand(a=temp65Not, b=temp66Not, out= out[6]);
+
+
+    ////// for bit 7
+    Nand(a=t000And, b= a[7], out = a7Not);
+    Nand(a=t001And, b= b[7], out = b7Not);
+    Nand(a=t002And, b= c[7], out = c7Not);
+    Nand(a=t003And, b= d[7], out = d7Not);
+    Nand(a=t100And, b= e[7], out = e7Not);
+    Nand(a=t101And, b= f[7], out = f7Not);
+    Nand(a=t102And, b= g[7], out = g7Not);
+    Nand(a=t103And, b= h[7], out = h7Not);
+
+    Nand(a=a7Not, b=b7Not, out = temp71);
+    Nand(a=temp71, b=temp71, out= temp71Not);
+    Nand(a=c7Not, b=d7Not, out = temp72);
+    Nand(a=temp72, b=temp72, out = temp72Not);
+    Nand(a=e7Not, b=f7Not, out = temp73);
+    Nand(a=temp73, b=temp73, out = temp73Not);
+    Nand(a=g7Not, b=h7Not, out = temp74);
+    Nand(a=temp74, b=temp74, out = temp74Not);
+
+    Nand(a=temp71Not, b=temp72Not, out = temp75);
+    Nand(a=temp75, b=temp75, out = temp75Not);
+    Nand(a=temp73Not, b=temp74Not, out = temp76);
+    Nand(a=temp76, b=temp76, out = temp76Not);
+
+    Nand(a=temp75Not, b=temp76Not, out= out[7]);
+
+
+    ////// for bit 8
+    Nand(a=t000And, b= a[8], out = a8Not);
+    Nand(a=t001And, b= b[8], out = b8Not);
+    Nand(a=t002And, b= c[8], out = c8Not);
+    Nand(a=t003And, b= d[8], out = d8Not);
+    Nand(a=t100And, b= e[8], out = e8Not);
+    Nand(a=t101And, b= f[8], out = f8Not);
+    Nand(a=t102And, b= g[8], out = g8Not);
+    Nand(a=t103And, b= h[8], out = h8Not);
+
+    Nand(a=a8Not, b=b8Not, out = temp81);
+    Nand(a=temp81, b=temp81, out= temp81Not);
+    Nand(a=c8Not, b=d8Not, out = temp82);
+    Nand(a=temp82, b=temp82, out = temp82Not);
+    Nand(a=e8Not, b=f8Not, out = temp83);
+    Nand(a=temp83, b=temp83, out = temp83Not);
+    Nand(a=g8Not, b=h8Not, out = temp84);
+    Nand(a=temp84, b=temp84, out = temp84Not);
+
+    Nand(a=temp81Not, b=temp82Not, out = temp85);
+    Nand(a=temp85, b=temp85, out = temp85Not);
+    Nand(a=temp83Not, b=temp84Not, out = temp86);
+    Nand(a=temp86, b=temp86, out = temp86Not);
+
+    Nand(a=temp85Not, b=temp86Not, out= out[8]);
+
+
+    ////// for bit 9
+    Nand(a=t000And, b= a[9], out = a9Not);
+    Nand(a=t001And, b= b[9], out = b9Not);
+    Nand(a=t002And, b= c[9], out = c9Not);
+    Nand(a=t003And, b= d[9], out = d9Not);
+    Nand(a=t100And, b= e[9], out = e9Not);
+    Nand(a=t101And, b= f[9], out = f9Not);
+    Nand(a=t102And, b= g[9], out = g9Not);
+    Nand(a=t103And, b= h[9], out = h9Not);
+
+    Nand(a=a9Not, b=b9Not, out = temp91);
+    Nand(a=temp91, b=temp91, out= temp91Not);
+    Nand(a=c9Not, b=d9Not, out = temp92);
+    Nand(a=temp92, b=temp92, out = temp92Not);
+    Nand(a=e9Not, b=f9Not, out = temp93);
+    Nand(a=temp93, b=temp93, out = temp93Not);
+    Nand(a=g9Not, b=h9Not, out = temp94);
+    Nand(a=temp94, b=temp94, out = temp94Not);
+
+    Nand(a=temp91Not, b=temp92Not, out = temp95);
+    Nand(a=temp95, b=temp95, out = temp95Not);
+    Nand(a=temp93Not, b=temp94Not, out = temp96);
+    Nand(a=temp96, b=temp96, out = temp96Not);
+
+    Nand(a=temp95Not, b=temp96Not, out= out[9]);
+
+
+    ////// for bit 10
+    Nand(a=t000And, b= a[10], out = a10Not);
+    Nand(a=t001And, b= b[10], out = b10Not);
+    Nand(a=t002And, b= c[10], out = c10Not);
+    Nand(a=t003And, b= d[10], out = d10Not);
+    Nand(a=t100And, b= e[10], out = e10Not);
+    Nand(a=t101And, b= f[10], out = f10Not);
+    Nand(a=t102And, b= g[10], out = g10Not);
+    Nand(a=t103And, b= h[10], out = h10Not);
+
+    Nand(a=a10Not, b=b10Not, out = temp101);
+    Nand(a=temp101, b=temp101, out= temp101Not);
+    Nand(a=c10Not, b=d10Not, out = temp102);
+    Nand(a=temp102, b=temp102, out = temp102Not);
+    Nand(a=e10Not, b=f10Not, out = temp103);
+    Nand(a=temp103, b=temp103, out = temp103Not);
+    Nand(a=g10Not, b=h10Not, out = temp104);
+    Nand(a=temp104, b=temp104, out = temp104Not);
+
+    Nand(a=temp101Not, b=temp102Not, out = temp105);
+    Nand(a=temp105, b=temp105, out = temp105Not);
+    Nand(a=temp103Not, b=temp104Not, out = temp106);
+    Nand(a=temp106, b=temp106, out = temp106Not);
+
+    Nand(a=temp105Not, b=temp106Not, out= out[10]);
+
+
+    ////// for bit 11
+    Nand(a=t000And, b= a[11], out = a11Not);
+    Nand(a=t001And, b= b[11], out = b11Not);
+    Nand(a=t002And, b= c[11], out = c11Not);
+    Nand(a=t003And, b= d[11], out = d11Not);
+    Nand(a=t100And, b= e[11], out = e11Not);
+    Nand(a=t101And, b= f[11], out = f11Not);
+    Nand(a=t102And, b= g[11], out = g11Not);
+    Nand(a=t103And, b= h[11], out = h11Not);
+
+    Nand(a=a11Not, b=b11Not, out = temp111);
+    Nand(a=temp111, b=temp111, out= temp111Not);
+    Nand(a=c11Not, b=d11Not, out = temp112);
+    Nand(a=temp112, b=temp112, out = temp112Not);
+    Nand(a=e11Not, b=f11Not, out = temp113);
+    Nand(a=temp113, b=temp113, out = temp113Not);
+    Nand(a=g11Not, b=h11Not, out = temp114);
+    Nand(a=temp114, b=temp114, out = temp114Not);
+
+    Nand(a=temp111Not, b=temp112Not, out = temp115);
+    Nand(a=temp115, b=temp115, out = temp115Not);
+    Nand(a=temp113Not, b=temp114Not, out = temp116);
+    Nand(a=temp116, b=temp116, out = temp116Not);
+
+    Nand(a=temp115Not, b=temp116Not, out= out[11]);
+
+
+    ////// for bit 12
+    Nand(a=t000And, b= a[12], out = a12Not);
+    Nand(a=t001And, b= b[12], out = b12Not);
+    Nand(a=t002And, b= c[12], out = c12Not);
+    Nand(a=t003And, b= d[12], out = d12Not);
+    Nand(a=t100And, b= e[12], out = e12Not);
+    Nand(a=t101And, b= f[12], out = f12Not);
+    Nand(a=t102And, b= g[12], out = g12Not);
+    Nand(a=t103And, b= h[12], out = h12Not);
+
+    Nand(a=a12Not, b=b12Not, out = temp121);
+    Nand(a=temp121, b=temp121, out= temp121Not);
+    Nand(a=c12Not, b=d12Not, out = temp122);
+    Nand(a=temp122, b=temp122, out = temp122Not);
+    Nand(a=e12Not, b=f12Not, out = temp123);
+    Nand(a=temp123, b=temp123, out = temp123Not);
+    Nand(a=g12Not, b=h12Not, out = temp124);
+    Nand(a=temp124, b=temp124, out = temp124Not);
+
+    Nand(a=temp121Not, b=temp122Not, out = temp125);
+    Nand(a=temp125, b=temp125, out = temp125Not);
+    Nand(a=temp123Not, b=temp124Not, out = temp126);
+    Nand(a=temp126, b=temp126, out = temp126Not);
+
+    Nand(a=temp125Not, b=temp126Not, out= out[12]);
+
+
+    ////// for bit 13
+    Nand(a=t000And, b= a[13], out = a13Not);
+    Nand(a=t001And, b= b[13], out = b13Not);
+    Nand(a=t002And, b= c[13], out = c13Not);
+    Nand(a=t003And, b= d[13], out = d13Not);
+    Nand(a=t100And, b= e[13], out = e13Not);
+    Nand(a=t101And, b= f[13], out = f13Not);
+    Nand(a=t102And, b= g[13], out = g13Not);
+    Nand(a=t103And, b= h[13], out = h13Not);
+
+    Nand(a=a13Not, b=b13Not, out = temp131);
+    Nand(a=temp131, b=temp131, out= temp131Not);
+    Nand(a=c13Not, b=d13Not, out = temp132);
+    Nand(a=temp132, b=temp132, out = temp132Not);
+    Nand(a=e13Not, b=f13Not, out = temp133);
+    Nand(a=temp133, b=temp133, out = temp133Not);
+    Nand(a=g13Not, b=h13Not, out = temp134);
+    Nand(a=temp134, b=temp134, out = temp134Not);
+
+    Nand(a=temp131Not, b=temp132Not, out = temp135);
+    Nand(a=temp135, b=temp135, out = temp135Not);
+    Nand(a=temp133Not, b=temp134Not, out = temp136);
+    Nand(a=temp136, b=temp136, out = temp136Not);
+
+    Nand(a=temp135Not, b=temp136Not, out= out[13]);
+
+
+    ////// for bit 14
+    Nand(a=t000And, b= a[14], out = a14Not);
+    Nand(a=t001And, b= b[14], out = b14Not);
+    Nand(a=t002And, b= c[14], out = c14Not);
+    Nand(a=t003And, b= d[14], out = d14Not);
+    Nand(a=t100And, b= e[14], out = e14Not);
+    Nand(a=t101And, b= f[14], out = f14Not);
+    Nand(a=t102And, b= g[14], out = g14Not);
+    Nand(a=t103And, b= h[14], out = h14Not);
+
+    Nand(a=a14Not, b=b14Not, out = temp141);
+    Nand(a=temp141, b=temp141, out= temp141Not);
+    Nand(a=c14Not, b=d14Not, out = temp142);
+    Nand(a=temp142, b=temp142, out = temp142Not);
+    Nand(a=e14Not, b=f14Not, out = temp143);
+    Nand(a=temp143, b=temp143, out = temp143Not);
+    Nand(a=g14Not, b=h14Not, out = temp144);
+    Nand(a=temp144, b=temp144, out = temp144Not);
+
+    Nand(a=temp141Not, b=temp142Not, out = temp145);
+    Nand(a=temp145, b=temp145, out = temp145Not);
+    Nand(a=temp143Not, b=temp144Not, out = temp146);
+    Nand(a=temp146, b=temp146, out = temp146Not);
+
+    Nand(a=temp145Not, b=temp146Not, out= out[14]);
+
+
+    ////// for bit 15
+    Nand(a=t000And, b= a[15], out = a15Not);
+    Nand(a=t001And, b= b[15], out = b15Not);
+    Nand(a=t002And, b= c[15], out = c15Not);
+    Nand(a=t003And, b= d[15], out = d15Not);
+    Nand(a=t100And, b= e[15], out = e15Not);
+    Nand(a=t101And, b= f[15], out = f15Not);
+    Nand(a=t102And, b= g[15], out = g15Not);
+    Nand(a=t103And, b= h[15], out = h15Not);
+
+    Nand(a=a15Not, b=b15Not, out = temp151);
+    Nand(a=temp151, b=temp151, out= temp151Not);
+    Nand(a=c15Not, b=d15Not, out = temp152);
+    Nand(a=temp152, b=temp152, out = temp152Not);
+    Nand(a=e15Not, b=f15Not, out = temp153);
+    Nand(a=temp153, b=temp153, out = temp153Not);
+    Nand(a=g15Not, b=h15Not, out = temp154);
+    Nand(a=temp154, b=temp154, out = temp154Not);
+
+    Nand(a=temp151Not, b=temp152Not, out = temp155);
+    Nand(a=temp155, b=temp155, out = temp155Not);
+    Nand(a=temp153Not, b=temp154Not, out = temp156);
+    Nand(a=temp156, b=temp156, out = temp156Not);
+
+    Nand(a=temp155Not, b=temp156Not, out= out[15]);
+    */
+}

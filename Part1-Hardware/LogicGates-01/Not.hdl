@@ -1,0 +1,11 @@
+/* Output = inverse of input
+* if in = 1, o/p = 0 & vice-versa 
+*/
+
+CHIP Not{
+    IN in;
+    OUT out;
+
+    PARTS:
+    Nand(a=in, b=in, out=out);
+}

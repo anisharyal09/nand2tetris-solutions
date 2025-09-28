@@ -1,0 +1,25 @@
+/** 
+ * Multiplexor: (input selector)
+ * if (sel = 0) out = a, else out = b
+ *
+ * Description from Nand2Tetris project materials. 
+ */
+
+CHIP Mux {
+    IN a, b, sel;
+    OUT out;
+
+    PARTS:
+    
+    // Sel Not
+    Nand(a=sel, b=sel, out = selNot);
+
+    // When sel = 0
+    Nand(a=selNot, b = a, out = aNot);
+
+    // When sel = 1
+    Nand(a=sel, b = b, out = bNot);
+
+    // Final out - Or gate
+    Nand(a=aNot, b=bNot, out = out);  // out = a or b 
+}

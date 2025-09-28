@@ -1,0 +1,24 @@
+/**
+ * Demultiplexor:
+ * [a, b] = [in, 0] if sel = 0
+ *          [0, in] if sel = 1
+ *
+ * Description from Nand2Tetris project materials. 
+ */
+
+CHIP DMux {
+    IN in, sel;
+    OUT a, b;
+
+    PARTS:
+    //Not sel
+    Nand(a = sel, b = sel, out = selNot);
+
+    // sel = 0, out = a
+    Nand(a = in, b = selNot, out = aNand);
+    Nand(a = aNand, b = aNand, out = a); // out = a when selection = 0;
+
+    // sel = 1, out = b
+    Nand(a = sel, b = in, out = bNand);
+    Nand(a = bNand, b = bNand, out = b); // out = b when selection = 1;
+}

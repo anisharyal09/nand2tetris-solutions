@@ -1,0 +1,25 @@
+/**
+ * Computes the sum of three bits.
+ * 
+ * Description from Nand2Tetris project materials. 
+ */
+CHIP FullAdder {
+    IN a, b, c;  // 1-bit inputs
+    OUT sum,     // Right bit of a + b + c
+        carry;   // Left bit of a + b + c
+
+    PARTS:
+    //Sum
+    Xor(a=a,b=b, out=aXorb);
+    Xor(a=aXorb, b=c, out=sum);
+
+    //Carry
+    And(a=a,b=b, out = aAndb);
+    And(a=a,b=c, out = aAndc);
+    And(a=b,b=c, out = bAndc);
+
+    Or(a=aAndb,b=aAndc, out = abOrac);
+    Or(a=abOrac,b=bAndc, out = carry);
+
+    
+}

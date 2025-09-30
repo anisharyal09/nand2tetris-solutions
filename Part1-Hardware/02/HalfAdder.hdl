@@ -1,0 +1,17 @@
+/**
+ * Computes the sum of two bits.
+ * 
+ * Description from Nand2Tetris project materials. 
+ */
+CHIP HalfAdder {
+    IN a, b;    // 1-bit inputs
+    OUT sum,    // Right bit of a + b 
+        carry;  // Left bit of a + b
+
+    PARTS:
+    // Sum
+    Xor(a=a,b=b, out = sum);
+    
+    //Carry
+    And(a=a,b=b, out = carry);
+}

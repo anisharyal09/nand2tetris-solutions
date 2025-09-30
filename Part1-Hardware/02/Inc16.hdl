@@ -1,0 +1,42 @@
+/**
+ * 16-bit incrementer:
+ * out = in + 1
+ * 
+ * Description from Nand2Tetris project materials. 
+ */
+CHIP Inc16 {
+    IN in[16];
+    OUT out[16];
+
+    PARTS:
+
+    //Implemented the concept of multi-bit buses from Week-1, & Addition of 16bit (Add16) concept from this project(2)
+    Add16(a[0]=true, a[1..15]=false, b=in, out=out);
+    
+/*------------*/
+    /*
+    //Conventional way.... using HalfAdder
+    //It can be solved as Add16, but here we're adding is '0000000000000001' to in[16]
+    //for 0th bit
+    HalfAdder(a=true,b=in[0], sum = out[0], carry = carry0); //input a = 1 (adding 1 to IN simply)
+
+    //for 1th bit - we can now ignore 0 for input, and simply can use 2-bit/half adder to add carry_from_last and present_in_bit 
+    HalfAdder(a=carry0, b=in[1], sum=out[1], carry = carry1);
+
+    //similarly...
+    HalfAdder(a=carry1, b=in[2], sum=out[2], carry = carry2);
+    HalfAdder(a=carry2, b=in[3], sum=out[3], carry = carry3);
+    HalfAdder(a=carry3, b=in[4], sum=out[4], carry = carry4);
+    HalfAdder(a=carry4, b=in[5], sum=out[5], carry = carry5);
+    HalfAdder(a=carry5, b=in[6], sum=out[6], carry = carry6);
+    HalfAdder(a=carry6, b=in[7], sum=out[7], carry = carry7);
+    HalfAdder(a=carry7, b=in[8], sum=out[8], carry = carry8);
+    HalfAdder(a=carry8, b=in[9], sum=out[9], carry = carry9);
+    HalfAdder(a=carry9, b=in[10], sum=out[10], carry = carry10);
+    HalfAdder(a=carry10, b=in[11], sum=out[11], carry = carry11);
+    HalfAdder(a=carry11, b=in[12], sum=out[12], carry = carry12);
+    HalfAdder(a=carry12, b=in[13], sum=out[13], carry = carry13);
+    HalfAdder(a=carry13, b=in[14], sum=out[14], carry = carry14);
+    HalfAdder(a=carry14, b=in[15], sum=out[15], carry = carry15);
+    */
+}

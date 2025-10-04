@@ -1,0 +1,25 @@
+/**
+ * 1-bit register:
+ * If load is asserted, the register's value is set to in;
+ * Otherwise, the register maintains its current value:
+ * if (load(t)) out(t+1) = in(t), else out(t+1) = out(t)
+ * 
+ * Description from Nand2Tetris project materials.  
+*/
+
+CHIP Bit {
+    IN in, load;
+    OUT out;
+
+    PARTS:
+    //load - selection
+    Mux(a=outloop, b=in, sel=load, out=muxOut);
+
+    //D Flip-Flop & out
+    DFF(in=muxOut, out=outloop, out=out);
+
+
+    // Idea of DFF -> 
+    // Out_NextState = D_IN(present)
+    // simply, present-Out = D_IN(last)
+}

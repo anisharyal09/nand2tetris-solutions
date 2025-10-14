@@ -1,0 +1,57 @@
+/**
+ * The complete address space of the Hack computer's memory,
+ * including RAM and memory-mapped I/O. 
+ * The chip facilitates read and write operations, as follows:
+ *     Read:  out(t) = Memory[address(t)](t)
+ *     Write: if load(t-1) then Memory[address(t-1)](t) = in(t-1)
+ * In words: the chip always outputs the value stored at the memory 
+ * location specified by address. If load=1, the in value is loaded 
+ * into the memory location specified by address. This value becomes 
+ * available through the out output from the next time step onward.
+ * Address space rules:
+ * Only the upper 16K+8K+1 words of the Memory chip are used. 
+ * Access to address>0x6000 is invalid. Access to any address in 
+ * the range 0x4000-0x5FFF results in accessing the screen memory 
+ * map. Access to address 0x6000 results in accessing the keyboard 
+ * memory map. The behavior in these addresses is described in the Screen
+ * and Keyboard chip specifications given in the lectures and the book.
+ * 
+ * Description from Nand2Tetris project materials.  
+ */
+
+CHIP Memory {
+    IN in[16], load, address[15];
+    OUT out[16];
+
+    PARTS:
+    //Main Logic -
+    //RAM16K → 0xxxx xxxx xxxx xxx
+    //Screen → 1xxx xxxx xxxx xxx up to 1011 1111 1111 1111
+    //Keyboard → 1100 0000 0000 0000
+
+
+    //logic implementation for load, sel
+    Not(in=address[14], out=not14); 
+    Not(in=address[13], out=not13);
+    And(a=not14, b=load, out=loadRam);     
+    And(a=address[14], b=not13, out=isScr);
+    And(a=isScr, b=load, out=loadScr);
+
+	//RAM16K
+    RAM16K(in=in, address=address[0..13], load=loadRam, out=outRam);
+
+    //Screen
+    Screen(in=in, address=address[0..12], load=loadScr, out=outScr);
+
+    //Keyboard
+    Keyboard(out=outKbd);
+    
+
+    //implementation of Logic for selection:
+    Mux16(a=outKbd, b=outScr, sel = isScr, out=temp);
+    Mux16(a=outRam, b=temp, sel = address[14], out=out);
+    
+    /* rr simply using 4WayMux
+    * Mux4Way16(a=outRam, b=outRam, c=outScr, d=outKbd, sel=address[13..14], out=out);
+    */
+}

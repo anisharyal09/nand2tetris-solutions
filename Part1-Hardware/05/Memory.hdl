@@ -51,7 +51,7 @@ CHIP Memory {
     Mux16(a=outKbd, b=outScr, sel = isScr, out=temp);
     Mux16(a=outRam, b=temp, sel = address[14], out=out);
     
-    /* rr simply using 4WayMux
+    /* or simply using 4WayMux
     * Mux4Way16(a=outRam, b=outRam, c=outScr, d=outKbd, sel=address[13..14], out=out);
     */
 }

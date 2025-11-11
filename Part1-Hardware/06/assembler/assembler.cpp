@@ -6,6 +6,7 @@
 
 using namespace std;
 
+// ---------------------- SymbolTable Class ---------------------
 class SymbolTable{
 protected:
     static unordered_map<string, int> table;
@@ -23,6 +24,7 @@ protected:
     }
 };
 
+// ---------------------- Code Class ---------------------
 class Code{
 private:
     static unordered_map<string, string> destTable;
@@ -35,6 +37,7 @@ public:
 
 };
 
+// ---------------------- FileHandler Class ---------------------
 class FileHandler{
 private:
     static ifstream inputFile;
@@ -85,6 +88,7 @@ public:
     }
 };
 
+// ---------------------- Methods Class ---------------------
 class Methods : public SymbolTable{
     static int labelCount;
 
@@ -92,14 +96,14 @@ public:
     static void ATranslation(string sym){
         int address;
         if (isdigit(sym[0])){
-            address = stoi(sym);
+            address = stoi(sym); // string to int
         }
         else if (contains(sym)){
             address = getAddress(sym);
         }
         else{
             address = 16 + labelCount;
-            addEntry(sym, address);
+            addEntry(sym, address); // add new variable to symbol table
             labelCount++;
         }
 
@@ -142,18 +146,16 @@ public:
         string binaryCode = "111" + compBits + destBits + jumpBits;
         FileHandler::writeHackCode(binaryCode);
     }
-
-    static void LTranslation(string sym){
-
-    }
 };
 
+// ---------------------- Instruction Classes ---------------------
 class Instruction{
 public:
     virtual void translate(string s) = 0;
     virtual ~Instruction() = default;
 };
 
+// ---------------------- A, C, L Instruction Classes ---------------------
 class AInstruction : public Instruction{
 private:
 public:
@@ -170,14 +172,8 @@ public:
     }
 };
 
-class LInstruction : public Instruction{
-    public:
-    void translate(string sym) override{
-        Methods::LTranslation(sym);
-    }
-};
-
-class FirstPass : public SymbolTable, public FileHandler{
+// ---------------------- FirstPass Class ---------------------
+class FirstPass : public SymbolTable{
     public:
     static void processLabel(string sym, int currentLine){
         if (!contains(sym)){
@@ -185,6 +181,7 @@ class FirstPass : public SymbolTable, public FileHandler{
         } 
     }
 
+    // handles the first pass to record labels
     static void run(string inF, string outF){
         int currentLine =0;
         string Instruction;
@@ -245,15 +242,16 @@ ofstream FileHandler::outputFile;
 //Methods Class
 int Methods::labelCount = 0;
 
+// ---------------------- Main Function ---------------------
 int main(){
-    string inputFileName = "Pong.asm";
-    string outputFileName = "Pong.hack";
+    string inputFileName = "Pong.asm"; // Read file name
+    string outputFileName = "Pong.hack"; // Write file name
 
     FirstPass::run(inputFileName, outputFileName);
 
     FileHandler::init(inputFileName, outputFileName);
     if (!FileHandler::hasMoreLines()) {
-        cerr << "⚠️ Input file failed to open or is empty: " << inputFileName << endl;
+        cerr << "Input file failed to open or is empty: " << inputFileName << endl;
         return 1;
     }
 
@@ -263,7 +261,7 @@ int main(){
             break;
 
         if (instruction.front() == '(' && instruction.back() == ')'){
-            continue;
+            continue; //skip labels in second pass
         }
 
         Instruction* inst = nullptr;
